@@ -114,169 +114,7 @@ criteria.
 
 ``` r
 lm_proposed = lm(bwt ~., data = birthweight)
-step_lm=step(lm_proposed, direction = 'both')
-```
-
-    ## Start:  AIC=48717.83
-    ## bwt ~ babysex + bhead + blength + delwt + fincome + frace + gaweeks + 
-    ##     malform + menarche + mheight + momage + mrace + parity + 
-    ##     pnumlbw + pnumsga + ppbmi + ppwt + smoken + wtgain
-    ## 
-    ## 
-    ## Step:  AIC=48717.83
-    ## bwt ~ babysex + bhead + blength + delwt + fincome + frace + gaweeks + 
-    ##     malform + menarche + mheight + momage + mrace + parity + 
-    ##     pnumlbw + pnumsga + ppbmi + ppwt + smoken
-    ## 
-    ## 
-    ## Step:  AIC=48717.83
-    ## bwt ~ babysex + bhead + blength + delwt + fincome + frace + gaweeks + 
-    ##     malform + menarche + mheight + momage + mrace + parity + 
-    ##     pnumlbw + ppbmi + ppwt + smoken
-    ## 
-    ## 
-    ## Step:  AIC=48717.83
-    ## bwt ~ babysex + bhead + blength + delwt + fincome + frace + gaweeks + 
-    ##     malform + menarche + mheight + momage + mrace + parity + 
-    ##     ppbmi + ppwt + smoken
-    ## 
-    ##            Df Sum of Sq       RSS   AIC
-    ## - frace     4    124365 320848704 48712
-    ## - malform   1      1419 320725757 48716
-    ## - ppbmi     1      6346 320730684 48716
-    ## - momage    1     28661 320752999 48716
-    ## - mheight   1     66886 320791224 48717
-    ## - menarche  1    111679 320836018 48717
-    ## - ppwt      1    131132 320855470 48718
-    ## <none>                  320724338 48718
-    ## - fincome   1    193454 320917792 48718
-    ## - parity    1    413584 321137922 48721
-    ## - mrace     3    868321 321592659 48724
-    ## - babysex   1    853796 321578134 48727
-    ## - gaweeks   1   4611823 325336161 48778
-    ## - smoken    1   5076393 325800732 48784
-    ## - delwt     1   8008891 328733230 48823
-    ## - blength   1 102050296 422774634 49915
-    ## - bhead     1 106535716 427260054 49961
-    ## 
-    ## Step:  AIC=48711.51
-    ## bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + 
-    ##     malform + menarche + mheight + momage + mrace + parity + 
-    ##     ppbmi + ppwt + smoken
-    ## 
-    ##            Df Sum of Sq       RSS   AIC
-    ## - malform   1      1447 320850151 48710
-    ## - ppbmi     1      6975 320855679 48710
-    ## - momage    1     28379 320877083 48710
-    ## - mheight   1     69502 320918206 48710
-    ## - menarche  1    115708 320964411 48711
-    ## - ppwt      1    133961 320982665 48711
-    ## <none>                  320848704 48712
-    ## - fincome   1    194405 321043108 48712
-    ## - parity    1    414687 321263390 48715
-    ## + frace     4    124365 320724338 48718
-    ## - babysex   1    852133 321700837 48721
-    ## - gaweeks   1   4625208 325473911 48772
-    ## - smoken    1   5036389 325885093 48777
-    ## - delwt     1   8013099 328861802 48817
-    ## - mrace     3  13540415 334389119 48885
-    ## - blength   1 101995688 422844392 49908
-    ## - bhead     1 106662962 427511666 49956
-    ## 
-    ## Step:  AIC=48709.53
-    ## bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + 
-    ##     menarche + mheight + momage + mrace + parity + ppbmi + ppwt + 
-    ##     smoken
-    ## 
-    ##            Df Sum of Sq       RSS   AIC
-    ## - ppbmi     1      6928 320857079 48708
-    ## - momage    1     28660 320878811 48708
-    ## - mheight   1     69320 320919470 48708
-    ## - menarche  1    116027 320966177 48709
-    ## - ppwt      1    133894 320984044 48709
-    ## <none>                  320850151 48710
-    ## - fincome   1    193784 321043934 48710
-    ## + malform   1      1447 320848704 48712
-    ## - parity    1    414482 321264633 48713
-    ## + frace     4    124393 320725757 48716
-    ## - babysex   1    851279 321701430 48719
-    ## - gaweeks   1   4624003 325474154 48770
-    ## - smoken    1   5035195 325885346 48775
-    ## - delwt     1   8029079 328879230 48815
-    ## - mrace     3  13553320 334403471 48883
-    ## - blength   1 102009225 422859375 49906
-    ## - bhead     1 106675331 427525481 49954
-    ## 
-    ## Step:  AIC=48707.63
-    ## bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + 
-    ##     menarche + mheight + momage + mrace + parity + ppwt + smoken
-    ## 
-    ##            Df Sum of Sq       RSS   AIC
-    ## - momage    1     29211 320886290 48706
-    ## - menarche  1    117635 320974714 48707
-    ## <none>                  320857079 48708
-    ## - fincome   1    195199 321052278 48708
-    ## + ppbmi     1      6928 320850151 48710
-    ## + malform   1      1400 320855679 48710
-    ## - parity    1    412984 321270064 48711
-    ## + frace     4    125020 320732060 48714
-    ## - babysex   1    850020 321707099 48717
-    ## - mheight   1   1078673 321935752 48720
-    ## - ppwt      1   2934023 323791103 48745
-    ## - gaweeks   1   4621504 325478583 48768
-    ## - smoken    1   5039368 325896447 48773
-    ## - delwt     1   8024939 328882018 48813
-    ## - mrace     3  13551444 334408523 48881
-    ## - blength   1 102018559 422875638 49904
-    ## - bhead     1 106821342 427678421 49953
-    ## 
-    ## Step:  AIC=48706.02
-    ## bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + 
-    ##     menarche + mheight + mrace + parity + ppwt + smoken
-    ## 
-    ##            Df Sum of Sq       RSS   AIC
-    ## - menarche  1    100121 320986412 48705
-    ## <none>                  320886290 48706
-    ## - fincome   1    240800 321127090 48707
-    ## + momage    1     29211 320857079 48708
-    ## + ppbmi     1      7479 320878811 48708
-    ## + malform   1      1678 320884612 48708
-    ## - parity    1    431433 321317724 48710
-    ## + frace     4    124743 320761547 48712
-    ## - babysex   1    841278 321727568 48715
-    ## - mheight   1   1076739 321963029 48719
-    ## - ppwt      1   2913653 323799943 48743
-    ## - gaweeks   1   4676469 325562760 48767
-    ## - smoken    1   5045104 325931394 48772
-    ## - delwt     1   8000672 328886962 48811
-    ## - mrace     3  14667730 335554021 48894
-    ## - blength   1 101990556 422876847 49902
-    ## - bhead     1 106864308 427750598 49952
-    ## 
-    ## Step:  AIC=48705.38
-    ## bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + 
-    ##     mheight + mrace + parity + ppwt + smoken
-    ## 
-    ##            Df Sum of Sq       RSS   AIC
-    ## <none>                  320986412 48705
-    ## + menarche  1    100121 320886290 48706
-    ## - fincome   1    245637 321232048 48707
-    ## + momage    1     11698 320974714 48707
-    ## + ppbmi     1      8823 320977589 48707
-    ## + malform   1      1884 320984528 48707
-    ## - parity    1    422770 321409181 48709
-    ## + frace     4    128726 320857686 48712
-    ## - babysex   1    846134 321832545 48715
-    ## - mheight   1   1012240 321998651 48717
-    ## - ppwt      1   2907049 323893461 48743
-    ## - gaweeks   1   4662501 325648912 48766
-    ## - smoken    1   5073849 326060260 48771
-    ## - delwt     1   8137459 329123871 48812
-    ## - mrace     3  14683609 335670021 48894
-    ## - blength   1 102191779 423178191 49903
-    ## - bhead     1 106779754 427766166 49950
-
-``` r
+step_lm=step(lm_proposed, direction = 'both', trace = FALSE)
 summary(step_lm)
 ```
 
@@ -312,11 +150,11 @@ summary(step_lm)
     ## Multiple R-squared:  0.7181, Adjusted R-squared:  0.7173 
     ## F-statistic: 848.1 on 13 and 4328 DF,  p-value: < 2.2e-16
 
-From the stepwise selection we get the best model with formula = bwt \~
-babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace
-+ parity + ppwt + smoken, with adjusted r-squared value of 0.7173 and
-the p-value of overall F-test is smaller than 2.2e-16, which is
-statistically significant (less than 0.05).
+From the stepwise selection we get the best model: `bwt ~ babysex +
+bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity +
+ppwt + smoken` with adjusted r-squared value of 0.7173 and the p-value
+of overall F-test is smaller than 2.2e-16, which is statistically
+significant (less than 0.05).
 
 We draw a plot of residuals vs. fitted values.
 
@@ -399,7 +237,7 @@ weather_df =
 ``` r
 r2_data = 
 weather_df %>%
- modelr::bootstrap(n = 1000) %>%
+ modelr::bootstrap(n = 5000) %>%
  mutate(
    models = map(strap, ~lm(tmax ~ tmin, data = .x)),
    results_r2 = map(models, broom::glance)) %>%
@@ -438,7 +276,8 @@ r2_data %>%
 ```
 
 <img src="Assignment-6_files/figure-gfm/unnamed-chunk-11-1.png" width="90%" />
-The distribution of `r_hat^2` is roughly close to a normal distribution.
+
+The distribution of r-square is roughly close to a normal distribution.
 However, the distribution is a little skewed and there are some
 outliers.
 
@@ -455,7 +294,8 @@ log_data %>%
 ```
 
 <img src="Assignment-6_files/figure-gfm/unnamed-chunk-12-1.png" width="90%" />
-The distribution of `log(beta0_hat * beta1_hat)` is also roughly close
+
+The distribution of log(beta0\_hat \* beta1\_hat) is also roughly close
 to a normal distribution. Again, the distribution is a little skewed and
 there are some outliers.
 
@@ -463,17 +303,18 @@ We now identify the 2.5% and 97.5% quantiles to provide a 95% confidence
 interval for these two quantities.
 
 ``` r
-quantile(r2_data$r.squared, c(.025, .975))%>%
+rquant = quantile(r2_data$r.squared, c(.025, .975))%>%
   knitr::kable(col.name = c("R-Squared"), digits = 4)
+rquant
 ```
 
 |       | R-Squared |
 | :---- | --------: |
-| 2.5%  |    0.8919 |
-| 97.5% |    0.9262 |
+| 2.5%  |    0.8937 |
+| 97.5% |    0.9273 |
 
 From the above table, the 95% confidence interval for R-Squared is
-(0.8962, 0.9269).
+(0.8937, 0.9273).
 
 ``` r
 quantile(log_data$log_result,c(.025, .975))%>%
@@ -482,8 +323,8 @@ quantile(log_data$log_result,c(.025, .975))%>%
 
 |       | log(beta0\_hat \* beta1\_hat) |
 | :---- | ----------------------------: |
-| 2.5%  |                        1.9656 |
-| 97.5% |                        2.0590 |
+| 2.5%  |                        1.9648 |
+| 97.5% |                        2.0585 |
 
 From the above table, the 95% confidence interval for log(beta0\_hat \*
-beta1\_hat) is (1.9656, 2.059).
+beta1\_hat) is (1.9648, 2.0585).

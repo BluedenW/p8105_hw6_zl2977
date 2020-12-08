@@ -133,10 +133,12 @@ We have cleaned the data and converted `babysex`, `frace`, `mrace` and `malform`
 
 ```{r}
 lm_proposed = lm(bwt ~., data = birthweight)
-step_lm=step(lm_proposed, direction = 'both')
+step_lm=step(lm_proposed, direction = 'both', trace = FALSE)
 summary(step_lm)
 ```
-From the stepwise selection we get the best model with formula = bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken, with adjusted r-squared value of 0.7173 and the p-value of overall F-test is smaller than 2.2e-16, which is statistically significant (less than 0.05).
+From the stepwise selection we get the best model:
+`bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken` 
+with adjusted r-squared value of 0.7173 and the p-value of overall F-test is smaller than 2.2e-16, which is statistically significant (less than 0.05).
 
 We draw a plot of residuals vs. fitted values.
 ```{r}
@@ -205,7 +207,7 @@ weather_df =
 
 r2_data = 
 weather_df %>%
- modelr::bootstrap(n = 1000) %>%
+ modelr::bootstrap(n = 5000) %>%
  mutate(
    models = map(strap, ~lm(tmax ~ tmin, data = .x)),
    results_r2 = map(models, broom::glance)) %>%
@@ -242,7 +244,8 @@ r2_data %>%
    caption = "Results from 5000 Sample Bootstrap"
  )
 ```
-The distribution of `r_hat^2` is roughly close to a normal distribution. However, the distribution is a little skewed and there are some outliers. 
+
+The distribution of r-square is roughly close to a normal distribution. However, the distribution is a little skewed and there are some outliers. 
 
 ```{r}   
 log_data %>%
@@ -256,20 +259,22 @@ log_data %>%
  )
 
 ```
-The distribution of `log(beta0_hat * beta1_hat)` is also roughly close to a normal distribution. Again, the distribution is a little skewed and there are some outliers. 
+
+The distribution of log(beta0_hat * beta1_hat) is also roughly close to a normal distribution. Again, the distribution is a little skewed and there are some outliers. 
 
 We now identify the 2.5% and 97.5% quantiles to provide a 95% confidence interval for these two quantities.
 
 ```{r}
-quantile(r2_data$r.squared, c(.025, .975))%>%
+rquant = quantile(r2_data$r.squared, c(.025, .975))%>%
   knitr::kable(col.name = c("R-Squared"), digits = 4)
+rquant
 ```
-
-From the above table, the 95% confidence interval for R-Squared is (0.8962, 0.9269).
+   
+From the above table, the 95% confidence interval for R-Squared is (0.8937, 0.9273).
 
 ```{r}
 quantile(log_data$log_result,c(.025, .975))%>%
   knitr::kable(col.name = c("log(beta0_hat * beta1_hat)"), digits = 4)
 ```
 
-From the above table, the 95% confidence interval for log(beta0_hat * beta1_hat) is (1.9656, 2.059).
+From the above table, the 95% confidence interval for log(beta0_hat * beta1_hat) is (1.9648, 2.0585).
