@@ -133,7 +133,7 @@ We have cleaned the data and converted `babysex`, `frace`, `mrace` and `malform`
 
 ```{r}
 lm_proposed = lm(bwt ~., data = birthweight)
-step_lm=step(lm_proposed, direction = 'both', trace = FALSE)
+step_lm=step(lm_proposed, direction = 'both')
 summary(step_lm)
 ```
 From the stepwise selection we get the best model with formula = bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken, with adjusted r-squared value of 0.7173 and the p-value of overall F-test is smaller than 2.2e-16, which is statistically significant (less than 0.05).

@@ -167,7 +167,7 @@ birthweight %>%
   geom_smooth(se = F, color = "red", method = "lm") + 
   labs(title = "Model residuals vs. Fitted values", 
        y = "Residuals",
-       x = "Prediction Value")
+       x = "Fitted Value")
 ```
 
 <img src="Assignment-6_files/figure-gfm/unnamed-chunk-7-1.png" width="90%" />
@@ -298,7 +298,7 @@ to a normal distribution. Again, the distribution is a little skewed and
 there are some outliers.
 
 We now identify the 2.5% and 97.5% quantiles to provide a 95% confidence
-interval for these two quantities
+interval for these two quantities.
 
 ``` r
 quantile(r2_data$r.squared, c(.025, .975))%>%
@@ -324,4 +324,4 @@ quantile(log_data$log_result,c(.025, .975))%>%
 | 97.5% |                        2.0590 |
 
 From the above table, the 95% confidence interval for log(beta0\_hat \*
-beta1\_hat) is (1.9656, 2.06).
+beta1\_hat) is (1.9656, 2.059).
