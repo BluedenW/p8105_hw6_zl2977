@@ -107,3 +107,80 @@ models_results_df %>%
   geom_errorbar(aes(ymin = CI_lower, ymax = CI_upper)) + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
+
+## Problem 2
+
+Load and clean the data for regression analysis.
+
+```{r}
+birthweight = read_csv("./data/birthweight.csv") %>%
+  janitor::clean_names() %>%
+  mutate(
+    babysex = factor(babysex),
+    babysex = fct_recode(babysex, male = "1", female = "2"),
+    frace = factor(frace),
+    frace = fct_recode(frace, white = "1", black = "2", asian = "3", puerto_rican = "4", other = "8"),
+    mrace = factor(mrace),
+    mrace = fct_recode(mrace, white = "1", black = "2", asian = "3", puerto_rican = "4", other = "8"),
+    malform = factor(malform),
+    malform = fct_recode(malform, absent = "0", present = "1"),
+    
+  )
+
+sum(is.na(birthweight))
+```
+We have cleaned the data and converted `babysex`, `frace`, `mrace` and `malform` into factors. There are no missing values in the dataset. The dataset contains `r nrow(birthweight)` rows and `r ncol(birthweight)` columns. I will use stepwise selection to find the best regression model for birthweight, with AIC as the criteria.
+
+```{r}
+lm_proposed = lm(bwt ~., data = birthweight)
+step_lm=step(lm_proposed, direction = 'both', trace = FALSE)
+summary(step_lm)
+```
+From the stepwise selection we get the best model with formula = bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken, with adjusted r-squared value of 0.7173 and the p-value of overall F-test is smaller than 2.2e-16, which is statistically significant (less than 0.05).
+
+We draw a plot of residuals vs. fitted values.
+```{r}
+birthweight %>% 
+  add_predictions(model = step_lm, var = "pred") %>% 
+  add_residuals(model = step_lm, var = "resid") %>%
+  ggplot(aes(x = pred, y = resid)) + 
+  geom_point(alpha = 0.5, color = "blue") +
+  geom_smooth(se = F, color = "red", method = "lm") + 
+  labs(title = "Model residuals vs. Fitted values", 
+       y = "Residuals",
+       x = "Prediction Value")
+```
+        
+From the above plot, we can see there are some very small predictions on the left side of the plot, and the residuals on the left side of the plot are not distributed normally (most residuals on the left have positive values). While most of the predictions are distributed evenly (constant variance) around the 0 line on the right side of the plot. This model seems not fitted quite well.
+
+Compare my model to two others. `model1` is the main effects only model `bwt ~ blength + gaweeks`, and `model_2` is using head circumference, length, sex, and all interactions (including the three-way interaction) between these, `bwt ~ bhead * blength * babysex`.
+
+```{r}
+cross_cv = 
+    crossv_mc(birthweight, 100) %>% 
+    mutate(
+        model_1 = map(train, ~lm(bwt ~ blength + gaweeks, data = .x)),
+        model_2 = map(train, ~lm(bwt ~ bhead * blength * babysex, data = .x)),
+        model_fit = map(train, ~lm(bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken, data = .x))) %>%
+    mutate(
+    rmse_model1 = map2_dbl(model_1, test, rmse),
+    rmse_model2 = map2_dbl(model_2, test, rmse),
+    rmse_modelfit = map2_dbl(model_fit, test, rmse)) 
+  
+comparison_df = cross_cv %>%
+  select(starts_with("rmse")) %>%
+  pivot_longer(everything(),
+               names_to = "model",
+               values_to = "rmse",
+               names_prefix = "rmse_") %>%
+  mutate(
+    model = fct_inorder(model)) 
+
+  comparison_df  %>%
+  ggplot(aes(x = model, y = rmse, fill =model)) +
+  geom_violin() +
+  labs(x = "Models", y = "rmse", title = "Distribution of RMSE Values for each Model")
+  
+```
+     
+From the above violin plot of RMSE, we can see my fitted model `modelfit` outperforms other two models. Moreover, `model2` including three way interactions performs better comparing with the main effects only model `model1`.
