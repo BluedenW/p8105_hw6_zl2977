@@ -1,44 +1,11 @@
----
-title: "Assignment 6"
-author: "Zhourong Li zl2977"
-date: "2020/12/7"
-output: github_document
----
-
-```{r setup, include=FALSE}
-
-library(modelr)
-library(tidyverse)
-set.seed(50)
-
-knitr::opts_chunk$set(
- echo = TRUE,
- warning = F,   
- message = F,
- fig.width = 12,
- fig.height = 8,
- # fig.asp = 0.618,
- out.width = "90%")
-
-theme_set(theme_minimal() +
-  theme(legend.position = "bottom",
-  plot.title = element_text(hjust = 0.5, size = 15),
-  plot.subtitle = element_text(hjust = 0.5, size = 12)))
-
-options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-
-scale_colour_discrete = scale_color_viridis_d
-scale_fill_discrete = scale_fill_viridis_d
-
-```
-
+Assignment 6
+================
+Zhourong Li zl2977
+2020/12/7
 
 ## Problem 1
 
-```{r}
+``` r
 homicide_df = 
   read_csv("data/homicide-data.csv", na = c("", "NA", "Unknown")) %>% 
   mutate(
@@ -55,10 +22,9 @@ homicide_df =
   select(city_state, resolution, victim_age, victim_race, victim_sex)
 ```
 
-
 Start with one city.
 
-```{r}
+``` r
 baltimore_df =
   homicide_df %>% 
   filter(city_state == "Baltimore, MD")
@@ -76,10 +42,16 @@ glm(resolution ~ victim_age + victim_race + victim_sex,
   knitr::kable(digits = 3)
 ```
 
+| term              |    OR | CI\_lower | CI\_upper |
+| :---------------- | ----: | --------: | --------: |
+| (Intercept)       | 1.363 |     0.975 |     1.907 |
+| victim\_age       | 0.993 |     0.987 |     1.000 |
+| victim\_raceWhite | 2.320 |     1.648 |     3.268 |
+| victim\_sexMale   | 0.426 |     0.325 |     0.558 |
 
 Try this across cities.
 
-```{r}
+``` r
 models_results_df = 
   homicide_df %>% 
   nest(data = -city_state) %>% 
@@ -98,7 +70,7 @@ models_results_df =
   select(city_state, term, OR, starts_with("CI")) 
 ```
 
-```{r}
+``` r
 models_results_df %>% 
   filter(term == "victim_sexMale") %>% 
   mutate(city_state = fct_reorder(city_state, OR)) %>% 
@@ -108,11 +80,13 @@ models_results_df %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
+<img src="Assignment-6_files/figure-gfm/unnamed-chunk-4-1.png" width="90%" />
+
 ## Problem 2
 
 Load and clean the data for regression analysis.
 
-```{r}
+``` r
 birthweight = read_csv("./data/birthweight.csv") %>%
   janitor::clean_names() %>%
   mutate(
@@ -129,17 +103,62 @@ birthweight = read_csv("./data/birthweight.csv") %>%
 
 sum(is.na(birthweight))
 ```
-We have cleaned the data and converted `babysex`, `frace`, `mrace` and `malform` into factors. There are no missing values in the dataset. The dataset contains `r nrow(birthweight)` rows and `r ncol(birthweight)` columns. I will use stepwise selection to find the best regression model for birthweight, with AIC as the criteria.
 
-```{r}
+    ## [1] 0
+
+We have cleaned the data and converted `babysex`, `frace`, `mrace` and
+`malform` into factors. There are no missing values in the dataset. The
+dataset contains 4342 rows and 20 columns. I will use stepwise selection
+to find the best regression model for birthweight, with AIC as the
+criteria.
+
+``` r
 lm_proposed = lm(bwt ~., data = birthweight)
 step_lm=step(lm_proposed, direction = 'both', trace = FALSE)
 summary(step_lm)
 ```
-From the stepwise selection we get the best model with formula = bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken, with adjusted r-squared value of 0.7173 and the p-value of overall F-test is smaller than 2.2e-16, which is statistically significant (less than 0.05).
 
-We draw a plot of residuals vs. fitted values.
-```{r}
+    ## 
+    ## Call:
+    ## lm(formula = bwt ~ babysex + bhead + blength + delwt + fincome + 
+    ##     gaweeks + mheight + mrace + parity + ppwt + smoken, data = birthweight)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -1097.18  -185.52    -3.39   174.14  2353.44 
+    ## 
+    ## Coefficients:
+    ##                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)       -6098.8219   137.5463 -44.340  < 2e-16 ***
+    ## babysexfemale        28.5580     8.4549   3.378 0.000737 ***
+    ## bhead               130.7770     3.4466  37.944  < 2e-16 ***
+    ## blength              74.9471     2.0190  37.120  < 2e-16 ***
+    ## delwt                 4.1067     0.3921  10.475  < 2e-16 ***
+    ## fincome               0.3180     0.1747   1.820 0.068844 .  
+    ## gaweeks              11.5925     1.4621   7.929 2.79e-15 ***
+    ## mheight               6.5940     1.7849   3.694 0.000223 ***
+    ## mraceblack         -138.7925     9.9071 -14.009  < 2e-16 ***
+    ## mraceasian          -74.8868    42.3146  -1.770 0.076837 .  
+    ## mracepuerto_rican  -100.6781    19.3247  -5.210 1.98e-07 ***
+    ## parity               96.3047    40.3362   2.388 0.017004 *  
+    ## ppwt                 -2.6756     0.4274  -6.261 4.20e-10 ***
+    ## smoken               -4.8434     0.5856  -8.271  < 2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 272.3 on 4328 degrees of freedom
+    ## Multiple R-squared:  0.7181, Adjusted R-squared:  0.7173 
+    ## F-statistic: 848.1 on 13 and 4328 DF,  p-value: < 2.2e-16
+
+From the stepwise selection we get the best model with formula = bwt \~
+babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace
++ parity + ppwt + smoken, with adjusted r-squared value of 0.7173 and
+the p-value of overall F-test is smaller than 2.2e-16, which is
+statistically significant (less than 0.05).
+
+We draw a plot of residuals vs. fitted values.
+
+``` r
 birthweight %>% 
   add_predictions(model = step_lm, var = "pred") %>% 
   add_residuals(model = step_lm, var = "resid") %>%
@@ -148,14 +167,24 @@ birthweight %>%
   geom_smooth(se = F, color = "red", method = "lm") + 
   labs(title = "Model residuals vs. Fitted values", 
        y = "Residuals",
-       x = "Fitted Value")
+       x = "Prediction Value")
 ```
-        
-From the above plot, we can see there are some very small predictions on the left side of the plot, and the residuals on the left side of the plot are not distributed normally (most residuals on the left have positive values). While most of the predictions are distributed evenly (constant variance) around the 0 line on the right side of the plot. This model seems not fitted quite well.
 
-Compare my model to two others. `model1` is the main effects only model `bwt ~ blength + gaweeks`, and `model_2` is using head circumference, length, sex, and all interactions (including the three-way interaction) between these, `bwt ~ bhead * blength * babysex`.
+<img src="Assignment-6_files/figure-gfm/unnamed-chunk-7-1.png" width="90%" />
 
-```{r}
+From the above plot, we can see there are some very small predictions on
+the left side of the plot, and the residuals on the left side of the
+plot are not distributed normally (most residuals on the left have
+positive values). While most of the predictions are distributed evenly
+(constant variance) around the 0 line on the right side of the plot.
+This model seems not fitted quite well.
+
+Compare my model to two others. `model1` is the main effects only model
+`bwt ~ blength + gaweeks`, and `model_2` is using head circumference,
+length, sex, and all interactions (including the three-way interaction)
+between these, `bwt ~ bhead * blength * babysex`.
+
+``` r
 cross_cv = 
     crossv_mc(birthweight, 100) %>% 
     mutate(
@@ -180,14 +209,18 @@ comparison_df = cross_cv %>%
   ggplot(aes(x = model, y = rmse, fill =model)) +
   geom_violin() +
   labs(x = "Models", y = "rmse", title = "Distribution of RMSE Values for each Model")
-  
 ```
-     
-From the above violin plot of RMSE, we can see my fitted model `modelfit` outperforms other two models. Moreover, `model2` including three way interactions performs better comparing with the main effects only model `model1`.
+
+<img src="Assignment-6_files/figure-gfm/unnamed-chunk-8-1.png" width="90%" />
+
+From the above violin plot of RMSE, we can see my fitted model
+`modelfit` outperforms other two models. Moreover, `model2` including
+three way interactions performs better comparing with the main effects
+only model `model1`.
 
 ## Problem 3
 
-```{r}
+``` r
 weather_df = 
   rnoaa::meteo_pull_monitors(
     c("USW00094728"),
@@ -201,8 +234,7 @@ weather_df =
   select(name, id, everything())
 ```
 
-```{r}
-
+``` r
 r2_data = 
 weather_df %>%
  modelr::bootstrap(n = 1000) %>%
@@ -231,7 +263,7 @@ log_data =
  mutate(log_result = log(beta_0*beta_1)) 
 ```
 
-```{r}
+``` r
 r2_data %>%
  ggplot(aes(x = r.squared)) +
  geom_density(fill = "blue", color = "pink", alpha = .7, size = 1.1) + 
@@ -242,9 +274,13 @@ r2_data %>%
    caption = "Results from 5000 Sample Bootstrap"
  )
 ```
-The distribution of `r_hat^2` is roughly close to a normal distribution. However, the distribution is a little skewed and there are some outliers. 
 
-```{r}   
+<img src="Assignment-6_files/figure-gfm/unnamed-chunk-11-1.png" width="90%" />
+The distribution of `r_hat^2` is roughly close to a normal distribution.
+However, the distribution is a little skewed and there are some
+outliers.
+
+``` r
 log_data %>%
  ggplot(aes(x = log_result)) +
  geom_density(fill = "green", color = "pink", alpha = .7, size = 1.1) +
@@ -254,22 +290,38 @@ log_data %>%
    title = "Distribution of log(beta0_hat * beta1_hat) Estimates",
    caption = "Results from 5000 Sample Bootstrap"
  )
-
 ```
-The distribution of `log(beta0_hat * beta1_hat)` is also roughly close to a normal distribution. Again, the distribution is a little skewed and there are some outliers. 
 
-We now identify the 2.5% and 97.5% quantiles to provide a 95% confidence interval for these two quantities.
+<img src="Assignment-6_files/figure-gfm/unnamed-chunk-12-1.png" width="90%" />
+The distribution of `log(beta0_hat * beta1_hat)` is also roughly close
+to a normal distribution. Again, the distribution is a little skewed and
+there are some outliers.
 
-```{r}
+We now identify the 2.5% and 97.5% quantiles to provide a 95% confidence
+interval for these two quantities
+
+``` r
 quantile(r2_data$r.squared, c(.025, .975))%>%
   knitr::kable(col.name = c("R-Squared"), digits = 4)
 ```
 
-From the above table, the 95% confidence interval for R-Squared is (0.8962, 0.9269).
+|       | R-Squared |
+| :---- | --------: |
+| 2.5%  |    0.8919 |
+| 97.5% |    0.9262 |
 
-```{r}
+From the above table, the 95% confidence interval for R-Squared is
+(0.8962, 0.9269).
+
+``` r
 quantile(log_data$log_result,c(.025, .975))%>%
   knitr::kable(col.name = c("log(beta0_hat * beta1_hat)"), digits = 4)
 ```
 
-From the above table, the 95% confidence interval for log(beta0_hat * beta1_hat) is (1.9656, 2.059).
+|       | log(beta0\_hat \* beta1\_hat) |
+| :---- | ----------------------------: |
+| 2.5%  |                        1.9656 |
+| 97.5% |                        2.0590 |
+
+From the above table, the 95% confidence interval for log(beta0\_hat \*
+beta1\_hat) is (1.9656, 2.06).
